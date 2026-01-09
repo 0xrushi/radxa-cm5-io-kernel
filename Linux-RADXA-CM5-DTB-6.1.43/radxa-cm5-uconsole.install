@@ -1,0 +1,8 @@
+post_upgrade() {
+  cp /boot/dtbs/am335x-boneblack.dtb /lib/firmware/am335x-boneblack-00A0.dtbo
+}
+
+post_remove() {
+  rm -f boot/initramfs-linux.img
+  rm -f boot/initramfs-linux-fallback.img
+}
