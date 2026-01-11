@@ -1,0 +1,13 @@
+diff --git a/fs/btrfs/print-tree.c b/fs/btrfs/print-tree.c
+index 28cb4bd..513233e 100644
+--- a/fs/btrfs/print-tree.c
++++ b/fs/btrfs/print-tree.c
+@@ -9,7 +9,7 @@
+ 
+ struct root_name_map {
+ 	u64 id;
+-	char name[16];
++	char name[24];
+ };
+ 
+ static const struct root_name_map root_map[] = {
