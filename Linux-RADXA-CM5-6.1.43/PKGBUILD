@@ -22,20 +22,23 @@ source=("https://www.kernel.org/pub/linux/kernel/v6.x/${_srcname}.tar.xz"
         '0002-arm64-dts-rockchip-disable-pwm0-on-rk3399-firefly.patch'
         '0003-pps-Compatibility-hack-should-be-X86-specific.patch'
         '0004-Revert-arm64-dts-rockchip-Move-rk3568-PCIe3-MSI-to-u.patch'
+	      '0005-btrfs-print-tree-fix-string-size.patch'
+	      '0006-btrfs-send-fix-kvcalloc-args.patch'
         'config-6.1.43-rockchip'
         'kernel.keyblock'
         'kernel_data_key.vbprivk'
         'linux.preset')
 
-md5sums=('9207ae77b0d63c22dc4646554963cfc7'
-         'c8b65e89edbde916a548abb06cda5c7a'
+md5sums=('b1f34c48cee7c4362c58b797f1341578'
+         '7207d68c5e0f88919dc0ebb3a7b4bbc2'
          '6be835567ca3d7e4bfd81c1cadd46035'
          '7862339da94da0b7958e61e2210760a7'
          'c064a0a49f4ed7d487d482ca73c75178'
          '416b7c6ef37cc0edb6cb67cf618360f5'
          'e3252a71f1f38f69799b0af9ad11ab8a'
-         'fff8eed990202f1618af25e346db1cc5'
-         '7c97cf141750ad810235b1ad06eb9f75'
+         'SKIP'
+         'SKIP'
+         '9dc5a94abc078d718ea5be72c59d8a76'
          '61c5ff73c136ed07a7aadbf58db3d96a'
          '584777ae88bce2c5659960151b64c7d8'
          '33ba82001fca579d43172a6db25d6aca')
@@ -57,8 +60,12 @@ prepare() {
   git apply ../0002-arm64-dts-rockchip-disable-pwm0-on-rk3399-firefly.patch
   git apply ../0003-pps-Compatibility-hack-should-be-X86-specific.patch
   git apply ../0004-Revert-arm64-dts-rockchip-Move-rk3568-PCIe3-MSI-to-u.patch
+  patch -p1 -i ../0005-btrfs-print-tree-fix-string-size.patch
+  patch -p1 -i ../0006-btrfs-send-fix-kvcalloc-args.patch
 
-  cat "${srcdir}/config" > ./.config
+  install -Dm644 "${srcdir}/config-6.1.43-rockchip" .config
+  make olddefconfig
+
 }
 
 build() {
@@ -70,6 +77,10 @@ build() {
 
   # build!
   unset LDFLAGS
+
+  # GCC/clang warn: string literal too long for fixed char[]; don't treat as error
+  export KCFLAGS+=' -Wno-error=unterminated-string-initialization'
+
   make ${MAKEFLAGS} Image Image.gz modules
   # Generate device tree blobs with symbols to support applying device tree overlays in U-Boot
   make ${MAKEFLAGS} DTC_FLAGS="-@" dtbs
@@ -233,7 +244,7 @@ _package-chromebook() {
   cp vmlinux.kpart "${pkgdir}/boot"
 }
 
-pkgname=("${pkgbase}" "${pkgbase}-headers" "${pkgbase}-chromebook")
+pkgname=("${pkgbase}" "${pkgbase}-headers")
 for _p in ${pkgname[@]}; do
   eval "package_${_p}() {
     _package${_p#${pkgbase}}
