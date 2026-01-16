@@ -1,0 +1,26 @@
+# Build artifacts
+**/pkg/
+**/src/
+
+# Archive files
+*.tar.xz
+*.tar.gz
+*.tar.bz2
+*.tar
+*.xz
+*.gz
+
+# Built kernel packages
+*.pkg.tar.xz
+*.pkg.tar.gz
+
+# Kernel signing keys
+*.keyblock
+*.vbprivk
+
+# Boot images and kernel binaries
+**/boot/
+*.img
+*.bin
+*.dtb
+*.dtbo

@@ -63,6 +63,10 @@ prepare() {
   patch -p1 -i ../0005-btrfs-print-tree-fix-string-size.patch
   patch -p1 -i ../0006-btrfs-send-fix-kvcalloc-args.patch
 
+  # Fix module names for mkinitcpio compatibility
+  sed -i 's|obj-$(CONFIG_CRYPTO_LZ4) += lz4.o|obj-$(CONFIG_CRYPTO_LZ4) += crypto_lz4.o\ncrypto_lz4-y := lz4.o|' crypto/Makefile
+  sed -i 's|obj-$(CONFIG_CRYPTO_LZ4HC) += lz4hc.o|obj-$(CONFIG_CRYPTO_LZ4HC) += crypto_lz4hc.o\ncrypto_lz4hc-y := lz4hc.o|' crypto/Makefile
+
   install -Dm644 "${srcdir}/config-6.1.43-rockchip" .config
   make olddefconfig
 
